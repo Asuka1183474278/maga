@@ -59,7 +59,7 @@ for j in range(16):
 #%%
 
 # 16个传感器增益
-Gain = np.empty((16, 3, 1),dtype=np.int)
+Gain = np.empty((16, 3, 1),dtype=int)
 for i in range(16):
     Gain[i] = np.array([[1800], [1800], [1800]]) +  200 * np.random.rand(3,1)
 
@@ -68,7 +68,8 @@ Offset = np.empty((16, 3, 1))
 for i in range(16):
     Offset[i] = np.random.uniform(-0.05, 0.05, (3,1))
 
-#传感器旋转矩阵
-H = np.ones((16,3,1))
+#传感器角度 Ψ Θ Φ
+H = np.zeros((16,3,1))
 
-test.main(Gain[0],H[0],Offset[0],theoryData[0])
+for i in range(16):
+    test.main(Gain[i], H[i], Offset[i],theoryData[i])

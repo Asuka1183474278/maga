@@ -1,4 +1,5 @@
 import numpy as np
+from math import cos, sin, pi, atan2 ,asin
 import matplotlib.pyplot as plt
 
 
@@ -9,6 +10,20 @@ threshold_stop = 10 ** -15
 threshold_step = 10 ** -15
 threshold_residual = 10 ** -15
 residual_memory = []
+
+# 欧拉角算旋转矩阵   Η[3，1]传感器角度 x y z
+def EulerToMatrix(H):
+    x, y, z = H[0,0], H[1,0], H[2,0]  # 单位为角度
+    x, y, z = x * pi / 180, y * pi / 180, z * pi / 180
+    r11, r12, r13 = cos(z) * cos(y), cos(z) * sin(y) * sin(x) - sin(z) * cos(x), cos(z) * sin(y) * cos(x) + sin(
+        z) * sin(x)
+    r21, r22, r23 = sin(z) * cos(y), sin(z) * sin(y) * sin(x) + cos(z) * cos(x), sin(z) * sin(y) * cos(x) - cos(
+        z) * sin(x)
+    r31, r32, r33 = -sin(y), cos(y) * sin(x), cos(y) * cos(x)
+    R = np.array([[r11, r12, r13],
+                  [r21, r22, r23],
+                  [r31, r32, r33]])
+    return R
 
 
 # construct a user function 理论值
@@ -23,8 +38,9 @@ def my_Func(params, input_data):
     O2 = params[7, 0]
     O3 = params[8, 0]
     X = np.zeros((200, 3, 1))
+    R = EulerToMatrix(np.array([[H1], [H2], [H3]]))
     for i in range(0, 200):
-        X[i] = np.diag(np.array([G1, G2, G3] * np.array([H1, H2, H3]))).dot(input_data[i])+ np.array([[O1], [O2], [O3]])
+        X[i] = np.dot(np.diag([G1,G2,G3]), R).dot(input_data[i]) + np.array([[O1], [O2], [O3]])
     return X
 
 
@@ -110,7 +126,7 @@ def LM(num_iter, params, input_data, output_data):
     g = g0 + g1 + g2
 
     stop = (np.linalg.norm(g, ord=np.inf) <= threshold_stop)  # set the init stop
-    print(stop)
+
     u = get_init_u(A, tao)  # set the init u
     v = 2  # set the init v=2
 
@@ -171,9 +187,9 @@ def main(Gain, H, O,theoryData):
     params[0, 0] = 200
     params[1, 0] = 200
     params[2, 0] = 200
-    params[3, 0] = 0.93
-    params[4, 0] = 0.94
-    params[5, 0] = 0.95
+    params[3, 0] = 0.5
+    params[4, 0] = 0.5
+    params[5, 0] = 0.5
     params[6, 0] = 0.01
     params[7, 0] = -0.005
     params[8, 0] = 0.0006
