@@ -1,6 +1,7 @@
 import numpy as np
 import LM
-# 16个传感器位置
+
+# 32个传感器位置
 SensorPosition = np.array([
     [[0.12], [0.12], [0]],
     [0.12], [0.04], [0],
@@ -72,4 +73,6 @@ for i in range(16):
 H = np.zeros((16,3,1))
 
 for i in range(16):
+    print(i)
     LM.main(Gain[i], H[i], Offset[i], theoryData[i])
+    print()

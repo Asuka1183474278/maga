@@ -39,6 +39,7 @@ def my_Func(params, input_data):
     O3 = params[8, 0]
     X = np.zeros((200, 3, 1))
     R = EulerToMatrix(np.array([[H1], [H2], [H3]]))
+    # 算 G·H·f(s,p,m) + O
     for i in range(0, 200):
         X[i] = np.dot(np.diag([G1,G2,G3]), R).dot(input_data[i]) + np.array([[O1], [O2], [O3]])
     return X
